@@ -474,19 +474,17 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
 	document.addEventListener ('mousewheel', zoom, false);
 	document.addEventListener ('DOMMouseScroll', zoom, false);
+	var prevtime = 0;
 	function zoom(event) {
-		if (event.wheelDelta) { /* IE/Opera. */
-                	camera.distance += event.wheelDelta;
-        	} else if (event.detail) { /** Mozilla case. */
-                	/** In Mozilla, sign of delta is different than in IE.
-                 	* Also, delta is multiple of 3.
-                 	*/
-                	camera.distance += event.detail/3;
-			//players[name].position.x += event.detail/3;
-        	}
-
+		var d = event.timeStamp - prevtime;
+		if (d > 100) d = 1;
+		else if (d > 50) d = 2;
+		else if (d > 25) d = 3;
+		else d = 4;
+		d *= (event.detail<0 || event.wheelDelta>0) ? 1 : -1;
+		prevtime = event.timeStamp;
+		camera.distance = (camera.distance -d < 1.5) ? 1.5 : camera.distance - d;
 	}
-
 
 	function setCamera(object) {
 		// camera rotate x & z
