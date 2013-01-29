@@ -27,8 +27,7 @@ The key command synopsis is replaced by the connection state.</p>
 <p>Of Note:
 <ul>
 <li>Heightmap terrain handling is currently hard-coded for 128x128 grayscale images</li>
-<li><s>Google Chrome runs the world a lot faster than Firefox, but mousewheel zoom doesn't work right 
-yet.</s>Normalized the mousewheel event, works consistently in both browsers.</li>
+<li>Normalized the mousewheel event, works consistently in both Firefox and Chrome browsers.</li>
 <li>There's an undocumented command, the "t" key, which will transport you instantaneously to the 
 highest point on the terrain.</li>
 <li>Another undocumented command, "x", toggles the server connection.</li>
