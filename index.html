@@ -210,7 +210,48 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	plane.castShadow = false;
 	plane.receiveShadow = true;
 	scene.add( plane );
-	
+
+
+	function makeConnection() {
+		connection = new WebSocket('ws://192.168.0.7:8080/srv');
+		connection.onopen = function(){
+			console.log('Connection open!');
+			connection.send(JSON.stringify(players[name].getState()));
+		}
+		connection.onclose = function(){
+			console.log('Connection closed!');
+			for (var p in players) {
+				if (p != name) {
+					scene.remove(players[p].object);
+					delete players[p];
+				}
+			}
+		}
+		connection.onmessage = function(msg) {
+			var obj = JSON.parse(msg.data);
+			if (obj.delete) {
+				console.log("deleting: "+obj.delete);
+				scene.remove(players[obj.delete].object);
+				delete players[obj.delete];
+				return;
+			}
+			if (obj.refresh) {
+				connection.send(JSON.stringify(players[name].getState()));
+				return;
+			}
+			if (obj.name === name) return;
+			if (obj.name in players) {
+				players[obj.name].setState(obj);
+			}
+			else {
+				//make a new guest
+				players[obj.name] = new Dude(obj.name, playergeometry, playermaterial);
+				players[obj.name].setState(obj);
+				scene.add(players[obj.name].object);
+			}
+			//console.log(msg.data);
+		}
+	}	
 
 
 	/**
@@ -248,41 +289,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		players[name].object.position.y = 4;  //need to move setPosition, above, to somewhere that'll see the terrain when refreshed from a caching web server...
 
 		if (multiplayer) {
-
-			connection = new WebSocket('ws://192.168.0.7:8080/srv');
-			connection.onopen = function(){
-				console.log('Connection open!');
-			connection.send(JSON.stringify(players[name].getState()));
-			}
-			connection.onclose = function(){
-				console.log('Connection closed!');
-				for (var p in players) {
-					if (p != name) {
-						scene.remove(players[p].object);
-						delete players[p];
-					}
-				}
-			}
-			connection.onmessage = function(msg) {
-				var obj = JSON.parse(msg.data);
-				if (obj.delete) {
-					console.log("deleting: "+obj.delete);
-					scene.remove(players[obj.delete].object);
-					delete players[obj.delete];
-					return;
-				}
-				if (obj.name === name) return;
-				if (obj.name in players) {
-					players[obj.name].setState(obj);
-				}
-				else {
-					//make a new guest
-					players[obj.name] = new Dude(obj.name, playergeometry, playermaterial);
-					players[obj.name].setState(obj);
-					scene.add(players[obj.name].object);
-				}
-				//console.log(msg.data);
-			}
+			makeConnection();
 		}
 
 	} );
@@ -298,9 +305,35 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		}else if(players[name].state === 'crstand'){
 			players[name].changeMotion('stand');
 		}
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
 	}, false);
 
 
+	/**
+	 * toggle connection
+	 */
+	document.addEventListener('keydown',function(e){
+		if ( !/88/.test(e.keyCode)){ return } //x key
+		if (multiplayer && connection) {
+			if (connection.readyState == 3) {
+				makeConnection();
+			}
+			if (connection.readyState == 1) {
+				connection.close();
+			}
+		}
+	}, false);
+
+
+	/**
+	 * refresh guest states
+	 */
+	document.addEventListener('keydown',function(e){
+		if ( !/82/.test(e.keyCode)){ return } //r key
+		var msg = { "refresh": yes };
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(msg));
+
+	}, false);
 	
 	/**
 	 * move
