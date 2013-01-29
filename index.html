@@ -365,7 +365,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		var raycaster = new THREE.Raycaster(pos, vec);
 		var intersects = raycaster.intersectObject(terrainMesh);
 		if (intersects.length>0) players[name].object.position.y = intersects[0].point.y+.5;
-		if (multiplayer) connection.send(JSON.stringify(players[name].getState()));
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
 	}
 
 	
@@ -395,7 +395,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				move();
 			}, 1000 / 60);
 		}
-		if (multiplayer) connection.send(JSON.stringify(players[name].getState()));
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
 	}, false);
 
 	document.addEventListener('keyup', function(e){
@@ -420,7 +420,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 			moveState.moving = false;
 			clearInterval(timer);
 		}
-		if (multiplayer) connection.send(JSON.stringify(players[name].getState()));
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
 	}, false);
 	
 	
@@ -518,6 +518,24 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		for (var p in players) {
 			if (p === name) setCamera(players[p].object);
 			players[p].animate(delta);
+		}
+
+		if (multiplayer && connection) {
+			if (connection.readyState == 0) {
+				document.getElementById('help').innerHTML = 'connecting...';
+			}
+			else if (connection.readyState == 1) {
+				document.getElementById('help').innerHTML = 'connected';
+			}
+			else if (connection.readyState == 2) {
+				document.getElementById('help').innerHTML = 'closing...';
+			}
+			else if (connection.readyState == 3) {
+				document.getElementById('help').innerHTML = 'disconnected';
+			}
+			else {
+				document.getElementById('help').innerHTML = 'unknown';
+			}
 		}
 
 		renderer.render( scene, viewcamera );

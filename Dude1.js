@@ -106,7 +106,6 @@ Dude = function (name, geometry, material) {
 			dir : this.direction,
 			mot : this.motion
 		}
-		console.log(state);
 		return state;
 	}
 
