@@ -34,11 +34,11 @@ Dude = function (name, geometry, material) {
 	this.object.castShadow = true;
 	this.object.receiveShadow = true;
 
-	var geom = new THREE.TextGeometry(name, { font: "helvetiker" });
+	//var geom = new THREE.TextGeometry(name, { font: "helvetiker" });
 
-	var mat  = new THREE.MeshPhongMaterial({color: 0x00ff00});
-	this.sign = new THREE.Mesh(geom, mat);
-	this.sign.position.y = this.object.position.y+1;
+	//var mat  = new THREE.MeshPhongMaterial({color: 0x00ff00});
+	//this.sign = new THREE.Mesh(geom, mat);
+	//this.sign.position.y = this.object.position.y+1;
 
 	this.motion  = 'stand';
 	this.state   = 'stand';
