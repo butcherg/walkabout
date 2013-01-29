@@ -19,14 +19,13 @@ wss.on('connection', function(ws) {
       obj = JSON.parse(message);
       name = obj.name;
     }
-    console.log('received: %s', message);
+    //console.log('received: %s', message);
     lastmessage[obj.name] = message;
     clients.forEach( function (client) {
-      client.send(message);
+      if (client.readyState === 1) client.send(message);
     });
   });
   ws.on('close', function() {
-    //delete clients[ws];
     clients.splice(me,1);
     index--;
     if (name) {
