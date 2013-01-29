@@ -258,8 +258,8 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				console.log('Connection closed!');
 				for (var p in players) {
 					if (p != name) {
-						scene.remove(players[obj.delete].object);
-						delete players[obj.delete];
+						scene.remove(players[p].object);
+						delete players[p];
 					}
 				}
 			}
