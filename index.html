@@ -256,6 +256,12 @@ window.addEventListener( 'DOMContentLoaded', function() {
 			}
 			connection.onclose = function(){
 				console.log('Connection closed!');
+				for (var p in players) {
+					if (p != name) {
+						scene.remove(players[obj.delete].object);
+						delete players[obj.delete];
+					}
+				}
 			}
 			connection.onmessage = function(msg) {
 				var obj = JSON.parse(msg.data);
