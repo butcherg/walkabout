@@ -29,6 +29,7 @@ wss.on('connection', function(ws) {
     clients.splice(me,1);
     index--;
     if (name) {
+      delete lastmessage[name];
       var msg = { "delete": name };
       clients.forEach( function (client) {
         if (client.readyState === 1) client.send(JSON.stringify(msg));    
