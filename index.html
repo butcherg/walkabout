@@ -31,7 +31,7 @@ canvas{
  */
 
 var home = { x: 0, y: 0, z: 0 }
-var multiplayer = false;
+var multiplayer = true;
 
 
 var camera = {
@@ -213,7 +213,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
 
 	function makeConnection() {
-		connection = new WebSocket('ws://192.168.0.7:8080/srv');
+		connection = new WebSocket('ws://127.0.0.1:8080');
 		connection.onopen = function(){
 			console.log('Connection open!');
 			connection.send(JSON.stringify(players[name].getState()));
@@ -248,6 +248,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				players[obj.name] = new Dude(obj.name, playergeometry, playermaterial);
 				players[obj.name].setState(obj);
 				scene.add(players[obj.name].object);
+				connection.send(JSON.stringify(players[name].getState()));
 			}
 			//console.log(msg.data);
 		}
@@ -319,6 +320,8 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				makeConnection();
 			}
 			if (connection.readyState == 1) {
+				var msg = { "delete" : name };
+				connection.send(JSON.stringify(msg));
 				connection.close();
 			}
 		}
