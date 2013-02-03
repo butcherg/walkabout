@@ -30,6 +30,20 @@ canvas{
  *	- multiplayer support with a node.js server
  */
 
+
+//Site-specific variables:
+
+var heightmap = 'heightmap.png';
+var terraintexture = 'terraintexture.jpg';
+var water = 'water.jpg';
+
+var charactermesh = 'droid.js';
+var charactertexture  = 'droidskin.js'
+
+var websocket_url = 'ws://localhost:7681';
+var websocket_protocol = 'lws-mirror-protocol';
+
+
 var home = { x: 0, y: 0, z: 0 }
 var multiplayer = true;
 
@@ -158,12 +172,12 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				home.z = terrainplane.vertices[i].z;
 			}
 		}
-		terrainMesh = new THREE.Mesh( terrainplane, new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture( 'terraintexture.jpg' ), color: 0xffffff} ) );
+		terrainMesh = new THREE.Mesh( terrainplane, new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture( terraintexture ), color: 0xffffff} ) );
 		terrainMesh.wireframe = true;
 		scene.add(terrainMesh);
 		terrainMesh.visible = true;
 	};
-	img.src = "heightmap.png";
+	img.src = heightmap;
 
 	
 	function getHeightData(img) {
@@ -197,7 +211,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
  
 	var planeGeometry = new THREE.PlaneGeometry(1000,1000);
 	planeGeometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
-	var planeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture( 'water.jpg' ), color: 0xffffff } );
+	var planeMaterial = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture( water ), color: 0xffffff } );
 	//var planeMaterial = new THREE.MeshPhongMaterial( { color: 0x0000ff } );
 	planeMaterial.map.repeat.x = 300;
 	planeMaterial.map.repeat.y = 300;
@@ -213,7 +227,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
 
 	function makeConnection() {
-		connection = new WebSocket('ws://127.0.0.1:8080');
+		connection = new WebSocket(websocket_url, websocket_protocol);
 		connection.onopen = function(){
 			console.log('Connection open!');
 			connection.send(JSON.stringify(players[name].getState()));
@@ -272,11 +286,11 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	}
 	
 
-	playermaterial = new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture( 'droidskin.png' ), ambient: 0x999999, color: 0xffffff, specular: 0xffffff, shininess: 25, morphTargets: true } );
+	playermaterial = new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture( charactertexture ), ambient: 0x999999, color: 0xffffff, specular: 0xffffff, shininess: 25, morphTargets: true } );
 
 
 	var loader = new THREE.JSONLoader();
-	loader.load( 'droid.js', function( geometry ) {
+	loader.load( charactermesh, function( geometry ) {
 
 		playergeometry = geometry;
 		//playermaterial = new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture( 'droidskin.png' ), ambient: 0x999999, color: 0xffffff, specular: 0xffffff, shininess: 25, morphTargets: true } );
@@ -486,16 +500,21 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	
 	var oldPointerX = oldPointerY = 0;
 
+	document.addEventListener('touchstart', rotateStart, false);
 	document.addEventListener('mousedown', rotateStart, false);
 	function rotateStart() {
 		oldPointerX = pointer.x;
 		oldPointerY = pointer.y;
 		renderer.domElement.addEventListener('mousemove', rotate, false);
 		renderer.domElement.addEventListener('mouseup', rotateStop, false);
+		renderer.domElement.addEventListener('touchmove', rotate, false);
+		renderer.domElement.addEventListener('touchend', rotateStop, false);
 	}
 	function rotateStop() {
 		renderer.domElement.removeEventListener('mousemove', rotate, false);
 		renderer.domElement.removeEventListener('mouseup', rotateStop, false);
+		renderer.domElement.removeEventListener('touchmove', rotate, false);
+		renderer.domElement.removeEventListener('touchend', rotateStop, false);
 	}
 
 	function rotate(){
