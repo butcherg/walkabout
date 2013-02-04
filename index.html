@@ -27,18 +27,20 @@ canvas{
  *	- Heightmap terrain
  *	- Simple horizon-to-horizon water
  *	- Very Simple character-follows-terrain using Raycaster
- *	- multiplayer support with a node.js server
+ *	- multiplayer support with a websocket server
  */
 
 
 //Site-specific variables:
 
 var heightmap = 'heightmap.png';
+var terrainsegmentsize = 1;  //put a heightmap coordinate at every one of these
 var terraintexture = 'terraintexture.jpg';
 var water = 'water.jpg';
 
 var charactermesh = 'droid.js';
 var charactertexture  = 'droidskin.js'
+var characterscale = .02;
 
 var websocket_url = 'ws://localhost:7681';
 var websocket_protocol = 'lws-mirror-protocol';
@@ -160,7 +162,8 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	var img = new Image();
 	img.onload = function () {
 		var data = getHeightData(img);
-		terrainplane = new THREE.PlaneGeometry( 127, 127, 127, 127);
+		//terrainplane = new THREE.PlaneGeometry( 127, 127, 127, 127);
+		terrainplane = new THREE.PlaneGeometry( (img.width-1)*terrainsegmentsize, (img.height-1)*terrainsegmentsize, (img.width-1), (img.height-1));
 		terrainplane.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) ); //r54 migration
 		for ( var i = 0, l = terrainplane.vertices.length; i < l; i++ ) {
 			terrainplane.vertices[i].setY(data[i]);
@@ -182,16 +185,16 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	
 	function getHeightData(img) {
 		var canvas = document.createElement( 'canvas' );
-		canvas.width = 128;
-		canvas.height = 128;
+		canvas.width = img.width;
+		canvas.height = img.height;
 		var context = canvas.getContext( '2d' );
-		var size = 128 * 128; 
+		var size = img.width * img.height; 
 		var imgdata = new Float32Array( size );
 		context.drawImage(img,0,0);
 		for ( var i = 0; i < size; i ++ ) {
 			imgdata[i] = 0
 		}
-		var imgd = context.getImageData(0, 0, 128, 128);
+		var imgd = context.getImageData(0, 0, img.width, img.height);
 		var pix = imgd.data;
 		var j=0;
 		for (var i = 0, n = pix.length; i < n; i += (4)) {
@@ -298,8 +301,10 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
 		players[name] = new Dude(name, geometry, playermaterial);
 		players[name].changeMotion('stand');
+		players[name].object.scale.set(characterscale, characterscale, characterscale);
 		scene.add(players[name].object);
 		//scene.add(players[name].sign);
+
 		players[name].setPosition(-38.98,-51.75,terrainMesh,90);
 		players[name].object.position.y = 4;  //need to move setPosition, above, to somewhere that'll see the terrain when refreshed from a caching web server...
 
