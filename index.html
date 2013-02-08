@@ -552,6 +552,17 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		camera.distance = (camera.distance -d < 1.5) ? 1.5 : camera.distance - d;
 	}
 
+
+	window.addEventListener( 'resize', onWindowResize, false );
+	function onWindowResize() {
+
+		viewcamera.aspect = window.innerWidth / window.innerHeight;
+		viewcamera.updateProjectionMatrix();
+
+		renderer.setSize( window.innerWidth, window.innerHeight );
+
+	}
+
 	function setCamera(object) {
 		// camera rotate x & z
 		viewcamera.position.x = object.position.x + camera.distance * Math.sin( (camera.x) * Math.PI / 360 );
