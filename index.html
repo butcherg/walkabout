@@ -247,6 +247,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		}
 		connection.onmessage = function(msg) {
 			var obj = JSON.parse(msg.data);
+			if (obj.name === name) return;
 			if (obj.delete) {
 				console.log("deleting: "+obj.delete);
 				scene.remove(players[obj.delete].object);
@@ -257,7 +258,6 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				connection.send(JSON.stringify(players[name].getState()));
 				return;
 			}
-			if (obj.name === name) return;
 			if (obj.name in players) {
 				players[obj.name].setState(obj);
 			}
