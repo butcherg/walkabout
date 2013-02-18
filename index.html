@@ -331,6 +331,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		if (multiplayer) {
 			makeConnection();
 		}
+		document.getElementById('position').innerHTML = Math.round(players[name].object.position.x*100)/100+" "+Math.round(players[name].object.position.y*100)/100+" "+Math.round(players[name].object.position.z*100)/100+" ";
 
 	} );
 
@@ -387,6 +388,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		players[name].object.position.x = home.x;
 		players[name].object.position.y = home.y+.5;
 		players[name].object.position.z = home.z;
+		document.getElementById('position').innerHTML = Math.round(players[name].object.position.x*100)/100+" "+Math.round(players[name].object.position.y*100)/100+" "+Math.round(players[name].object.position.z*100)/100+" ";
 	}
 
 	var moveState = {
@@ -441,6 +443,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		var intersects = raycaster.intersectObject(terrainMesh);
 		if (intersects.length>0) players[name].object.position.y = intersects[0].point.y+.5;
 		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
+		document.getElementById('position').innerHTML = Math.round(players[name].object.position.x*100)/100+" "+Math.round(players[name].object.position.y*100)/100+" "+Math.round(players[name].object.position.z*100)/100+" ";
 	}
 
 	
@@ -605,11 +608,16 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		var delta = clock.getDelta();
 		var isEndFrame;
 		var isAction;
+		var plist = name;
 
 		for (var p in players) {
-			if (p === name) setCamera(players[p].object);
+			if (p === name) 
+				setCamera(players[p].object);
+			else
+				plist = plist+","+p;
 			players[p].animate(delta);
 		}
+		document.getElementById('players').innerHTML = plist;
 
 		if (multiplayer && connection) {
 			if (connection.readyState == 0) {
@@ -659,6 +667,13 @@ Arrow keys also work... <br>
 C key : toggle Crouch<br>
 <!--Enter key : chat<br>-->
 MouseDrag : rotate
+</div>
+
+<div id="position" style="position:absolute; top: 35px; z-index:10; background:rgba(0,0,0,0.5); padding:5px; color:#fff;">
+</div>
+
+
+<div id="players" style="position:absolute; top: 60px; z-index:10; background:rgba(0,0,0,0.5); padding:5px; color:#fff;">
 </div>
 
 </body>
