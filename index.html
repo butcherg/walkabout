@@ -129,11 +129,15 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	
 	animate();
 
+	
+	//skybox: uncomment one of the following two:
+
 
 	/**
 	 * create skybox: from http://http://learningthreejs.com/blog/2011/08/15/lets-do-a-sky/
 	 */
 
+/*
 	//order is +x, -x, +y, -y, +z, -z
 	var urls = [ 	"skybox3.jpg" , "skybox1.jpg",
 			"skyboxup.jpg", "skyboxdn.jpg",
@@ -152,7 +156,17 @@ window.addEventListener( 'DOMContentLoaded', function() {
 
 	skyboxMesh	= new THREE.Mesh( new THREE.CubeGeometry( 10000, 10000, 10000, 1, 1, 1, null, true ), skymaterial );
 	scene.add( skyboxMesh );
+*/
 
+
+	/**
+	 * skydome: http://pages.cs.wisc.edu/~lizy/mrdoob-three.js-ef5f05d/examples/webgl_lights_hemisphere.html
+	 */
+
+	var skyGeo = new THREE.SphereGeometry( 1000, 32, 15 );
+	var skyMat = new THREE.MeshBasicMaterial( {color: 0xddddff, side: THREE.BackSide } );
+	var sky = new THREE.Mesh( skyGeo, skyMat );
+	scene.add( sky );
 
 
 	/**
