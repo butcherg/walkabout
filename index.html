@@ -76,6 +76,8 @@ var playergeometry;
 var playermaterial;
 var connection;
 
+var abovefog = new THREE.FogExp2( 0xffffff, 0.003 );
+var belowfog = new THREE.FogExp2( 0x888888, 0.25 );
 
 window.addEventListener( 'DOMContentLoaded', function() {
 	var width = window.innerWidth;
@@ -83,7 +85,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	var clock = new THREE.Clock();
 
 	var scene = new THREE.Scene();
-	scene.fog = new THREE.FogExp2( 0xffffff, 0.003 );
+	scene.fog = abovefog;
 	
 	var viewcamera = new THREE.PerspectiveCamera( 40, width / height, 1, 10000 );
 	scene.add( viewcamera );
@@ -626,6 +628,10 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				document.getElementById('help').innerHTML = 'unknown';
 			}
 		}
+		if (viewcamera.position.y < 3)
+			scene.fog = belowfog;
+		else
+			scene.fog = abovefog;
 
 		renderer.render( scene, viewcamera );
 	}
