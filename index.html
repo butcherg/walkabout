@@ -342,7 +342,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 			if (connection.readyState == 1) {
 				var msg = { "delete" : name };
 				connection.send(JSON.stringify(msg));
-				connection.close();
+				connection.close(1000);
 			}
 		}
 	}, false);
