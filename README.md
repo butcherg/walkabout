@@ -11,7 +11,8 @@ In it, you 'll find javascript using Three.js to create:
 <li>Heightmap terrain</li>
 <li>Very simple water mesh</li>
 <li>Character walk on uneven terrain using a Raycaster</li>
-<li>Multiplayer through a node.js Websocket server</li>
+<li>Character manipulation with both mouse/keyboard and touch for phones/tablets</li>
+<li>Multiplayer through a Websocket server</li>
 </ul>
 
 Each of the components was created using code from others' examples, the sources are cited in
@@ -31,10 +32,15 @@ The key command synopsis is replaced by the connection state.</p>
 <li>There's an undocumented command, the "t" key, which will transport you instantaneously to the 
 highest point on the terrain.</li>
 <li>Another undocumented command, "x", toggles the server connection.</li>
+<li>Touch interface is limited, and right now only works properly in landscape. Touch-drag rotates the 
+camera around the character. If you start your touch at the bottom of the screen, the character walks 
+in the direction the camera is facing.  The only browser I've been completely successful with on my
+phone was Google's Chrome Beta, and at this writing you have to manually enable WebGL.</li>
 <li>On steep terrain,  you'll notice that your character's feet are occasionally below the terrain 
 surface.  It's 'hello world', not Second Life, so learn to love it, or send me a patch to improve
 it. :)</li>
-<li>Running the server.js requires node.js, as well as the websocket library (npm install ws)</li>
+<li>Included in the tree is a node.js server, requires node.js, as well as the websocket library 
+(npm install ws).  I have a C++/libwebsockets server that is posted in a separate repository, lws-server.</li>
 </ul>
 
 
