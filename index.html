@@ -253,7 +253,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		connection = new WebSocket(websocket_url, websocket_protocol);
 		connection.onopen = function(){
 			console.log('Connection open!');
-			connection.send(JSON.stringify(players[name].getState()));
+			connection.send(JSON.stringify(players[name].getStateRounded()));
 		}
 		connection.onclose = function(){
 			console.log('Connection closed!');
