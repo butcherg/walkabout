@@ -109,6 +109,18 @@ Dude = function (name, geometry, material) {
 		return state;
 	}
 
+	this.getStateRounded = function () {
+		var state = {
+			name: this.name,
+			x   : Math.round(this.object.position.x * 100)/100,
+			y   : Math.round(this.object.position.y * 100)/100,
+			z   : Math.round(this.object.position.z * 100)/100,
+			dir : Math.round(this.direction * 100)/100,
+			mot : this.motion
+		}
+		return state;
+	}
+
 
 };
 

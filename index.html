@@ -443,8 +443,9 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		var raycaster = new THREE.Raycaster(pos, vec);
 		var intersects = raycaster.intersectObject(terrainMesh);
 		if (intersects.length>0) players[name].object.position.y = intersects[0].point.y+.5;
-		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
-		document.getElementById('position').innerHTML = Math.round(players[name].object.position.x*100)/100+" "+Math.round(players[name].object.position.y*100)/100+" "+Math.round(players[name].object.position.z*100)/100+" ";
+		var rndstate = players[name].getStateRounded();
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(rndstate));
+		document.getElementById('position').innerHTML = rndstate.x+" "+rndstate.y+" "+rndstate.z+" ";
 	}
 
 	
@@ -474,7 +475,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				move();
 			}, 1000 / 60);
 		}
-		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getStateRounded()));
 	}, false);
 
 	document.addEventListener('keyup', function(e){
@@ -499,7 +500,7 @@ window.addEventListener( 'DOMContentLoaded', function() {
 			moveState.moving = false;
 			clearInterval(timer);
 		}
-		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
+		if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getStateRounded()));
 	}, false);
 	
 	
