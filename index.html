@@ -520,7 +520,66 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		return {top: top, left: left};
 	}
 	
+	function startMoving() {
+		moveState.front = true;
+		if(!moveState.moving){
+			if(players[name].state === 'stand')  {players[name].changeMotion('run');}
+			if(players[name].state === 'crstand'){players[name].changeMotion('crwalk');}
+			moveState.moving = true;
+			move();
+			timer = setInterval( function(){
+				move();
+			}, 1000 / 60);
+			if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
+		}
+	}
+	
+	function stopMoving() {
+		moveState.front = false;
+		if(!moveState.front && !moveState.Backwards && !moveState.left && !moveState.right){
+			if(players[name].state === 'run')  {players[name].changeMotion('stand');}
+			if(players[name].state === 'crwalk'){players[name].changeMotion('crstand');}
+			players[name].changeMotion(players[name].state);
+			moveState.moving = false;
+			clearInterval(timer);
+			if (multiplayer && connection.readyState == 1) connection.send(JSON.stringify(players[name].getState()));
+		}
+	}
+
+
+	var oldPointerX = oldPointerY = 0;
 	var pointer = {x : 0, y : 0};
+	document.addEventListener('touchstart', function (e) {
+		if (e.targetTouches.length == 1) {
+			var touch = e.targetTouches[0];
+			var mouseX = touch.clientX - getElementPosition(renderer.domElement).left;
+			var mouseY = touch.clientY - getElementPosition(renderer.domElement).top;
+			pointer.x =   (mouseX / renderer.domElement.width) * 2 - 1;
+			pointer.y = - (mouseY / renderer.domElement.height) * 2 + 1;
+			oldPointerX = pointer.x;
+			oldPointerY = pointer.y;
+			if (touch.pageY / window.innerHeight > .9) startMoving();
+			document.addEventListener('touchmove', rotate, false);
+		}
+	}, false );
+	
+	document.addEventListener('touchend', function(e) {
+		stopMoving();
+		document.removeEventListener('touchmove', rotate, false);
+	}, false);
+
+	document.addEventListener('touchmove', function(e) {
+		e.preventDefault();
+		if (e.targetTouches.length == 1) {
+			var touch = e.targetTouches[0];
+			var mouseX = touch.clientX - getElementPosition(renderer.domElement).left;
+			var mouseY = touch.clientY - getElementPosition(renderer.domElement).top;
+			pointer.x =   (mouseX / renderer.domElement.width) * 2 - 1;
+			pointer.y = - (mouseY / renderer.domElement.height) * 2 + 1;
+		}
+	}, false);
+
+
 	document.addEventListener('mousemove', function(e){
 		var mouseX = e.clientX - getElementPosition(renderer.domElement).left;
 		var mouseY = e.clientY - getElementPosition(renderer.domElement).top;
@@ -528,7 +587,6 @@ window.addEventListener( 'DOMContentLoaded', function() {
 		pointer.y = - (mouseY / renderer.domElement.height) * 2 + 1;
 	}, false);
 	
-	var oldPointerX = oldPointerY = 0;
 
 	document.addEventListener('touchstart', rotateStart, false);
 	document.addEventListener('mousedown', rotateStart, false);
