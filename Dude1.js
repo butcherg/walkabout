@@ -112,6 +112,7 @@ Dude = function (name, geometry, material) {
 
 	this.getStateRounded = function () {
 		var state = {
+			action: 'broadcast',
 			name: this.name,
 			x   : Math.round(this.object.position.x * 100)/100,
 			y   : Math.round(this.object.position.y * 100)/100,
