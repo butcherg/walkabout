@@ -99,6 +99,7 @@ Dude = function (name, geometry, material) {
 
 	this.getState = function () {
 		var state = {
+			action: 'broadcast',
 			name: this.name,
 			x   : this.object.position.x,
 			y   : this.object.position.y,
