@@ -43,9 +43,9 @@ var charactermesh = 'droid.js';
 var charactertexture  = 'droidskin.png'
 var characterscale = .02;
 
-var websocket_url = 'ws://localhost:7681';
+var websocket_url = 'ws://pulpitrock.net:7681/broadcast';
 var websocket_protocol = 'lws-mirror-protocol';
-
+//var websocket_protocol = '';
 
 var home = { x: 0, y: 0, z: 0 }
 var multiplayer = true;
@@ -65,8 +65,10 @@ var playertemplate;
 var players = new Object();
 
 var name;
+var password;
 if (multiplayer) {
-	name = prompt("Please enter your name","Anon");
+	name = prompt("Name","");
+	password = prompt("Password","");
 } 
 else {
 	name = 'foo';
@@ -252,6 +254,12 @@ window.addEventListener( 'DOMContentLoaded', function() {
 	function makeConnection() {
 		connection = new WebSocket(websocket_url, websocket_protocol);
 		connection.onopen = function(){
+			var login_msg = {
+				action: 'authenticate',
+				name: name,
+				password: password
+			}
+			connection.send(JSON.stringify(login_msg));
 			console.log('Connection open!');
 			connection.send(JSON.stringify(players[name].getStateRounded()));
 		}
@@ -278,15 +286,17 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				connection.send(JSON.stringify(players[name].getState()));
 				return;
 			}
-			if (obj.name in players) {
-				players[obj.name].setState(obj);
-			}
-			else {
-				//make a new guest
-				players[obj.name] = new Dude(obj.name, playergeometry, playermaterial);
-				players[obj.name].setState(obj);
-				scene.add(players[obj.name].object);
-				connection.send(JSON.stringify(players[name].getState()));
+			if (obj.action == 'broadcast') {
+				if (obj.name in players) {
+					players[obj.name].setState(obj);
+				}
+				else {
+					//make a new guest
+					players[obj.name] = new Dude(obj.name, playergeometry, playermaterial);
+					players[obj.name].setState(obj);
+					scene.add(players[obj.name].object);
+					connection.send(JSON.stringify(players[name].getState()));
+				}
 			}
 			//console.log(msg.data);
 		}
@@ -361,8 +371,8 @@ window.addEventListener( 'DOMContentLoaded', function() {
 				makeConnection();
 			}
 			if (connection.readyState == 1) {
-				var msg = { "delete" : name };
-				connection.send(JSON.stringify(msg));
+//				var msg = { "delete" : name };
+//				connection.send(JSON.stringify(msg));
 				connection.close(1000);
 			}
 		}
